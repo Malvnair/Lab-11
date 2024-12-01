@@ -99,6 +99,21 @@ def advection1d(method, nspace, ntime, tau_rel, params):
 
 
 
+# Import the plotting code from wave_plot.py
+def plot_wave(a, x, t):
+    plotskip = 50
+    fig, ax = plt.subplots()
+    yoffset = a[:, 0].max() - a[:, 0].min()
+    for i in np.arange(len(t)-1, -1, -plotskip):
+        ax.plot(x, a[:, i] + yoffset * i / plotskip, label=f't ={t[i]:.3f}')
+    ax.legend()
+    ax.set_xlabel('X position')
+    ax.set_ylabel('a(x,t) [offset]')
+    plt.title('Wave Propagation Visualization')
+    plt.savefig('NairMalavika_Lab11_Fig1.png')
+    plt.show()
+
+
 # Parameters
 L = 5
 c = 1
@@ -108,3 +123,7 @@ tau_rel = 1.0
 
 # call function with Lax method
 a_lax, x_lax, t_lax = advection1d('lax', nspace, ntime, tau_rel, [L, c])
+
+
+# plot the wave propagation
+plot_wave(a_lax, x_lax, t_lax)
