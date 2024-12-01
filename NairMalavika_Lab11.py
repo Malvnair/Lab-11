@@ -83,6 +83,17 @@ def advection1d(method, nspace, ntime, tau_rel, params):
     a = np.zeros((nspace, ntime))
     a[:, 0] = make_initialcond(x_i=x)
 
+    
+    # Construct the matrix A
+    if method == 'ftcs':
+        alpha = c * tau / (2 * h)
+        A = make_tridiagonal(nspace, b=alpha, d=1.0, a=-alpha)
+    elif method == 'lax':
+        alpha = c * tau / (2 * h)
+        A = make_tridiagonal(nspace, b=0.5 + alpha, d=0.0, a=0.5 - alpha)
+    else:
+        raise ValueError("Invalid method. Choose 'ftcs' or 'lax'.")
+
 
     return a, x, t
 
