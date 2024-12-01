@@ -88,3 +88,12 @@ def advection1d(method, nspace, ntime, tau_rel, params):
 
 
 
+# Parameters
+L = 5
+c = 1
+nspace = 300
+ntime = 500
+tau_rel = 1.0
+
+# call function with Lax method
+a_lax, x_lax, t_lax = advection1d('lax', nspace, ntime, tau_rel, [L, c])
