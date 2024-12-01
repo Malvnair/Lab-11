@@ -82,6 +82,13 @@ def advection1d(method, nspace, ntime, tau_rel, params):
     # Initial condition
     a = np.zeros((nspace, ntime))
     a[:, 0] = make_initialcond(x_i=x)
+    
+    # Check stability for FTCS
+    if method == 'ftcs':
+        spectral_radius_A = spectral_radius(A)
+        if spectral_radius_A > 1:
+            print("FTCS method is unstable.")
+
 
     
     # Construct the matrix A
