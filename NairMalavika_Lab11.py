@@ -1,3 +1,4 @@
+# Imported the necessary libraries
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -7,10 +8,10 @@ def spectral_radius(A):
     """Calculates the maxium absolute eigenvalue of a 2-D array A
 
     Args:
-        A : 2D array from part 1
+        A : Sqaure 2D array.
 
     Returns:
-        maximum absolute value of eigenvalues
+        Maximum absolute value of the eigenvalues of A.
     """    
     
     #determine the eigenvalues, only get that value from the tuple
@@ -28,12 +29,12 @@ def make_initialcond(sigma_0=0.2, k_0=35, x_i = None):
     Function to solve advection equation for the time using Lax method and traffic simulation.
 
     Parameters:
-    x_i => The spatial grid with positions
-    sigma_0 => The width of the wave packet . 0.2 is used as default value
-    k_0 => The average wave number. 35 is used as default value
+    x_i: The spatial grid with positions
+    sigma_0: The width of the wave packet . 0.2 is used as default value
+    k_0: The average wave number. 35 is used as default value
 
     Returns: 
-        the initial condition a=> a(x,0)
+        The initial condition a=> a(x,0). Will raise a ValueError if the spatial grid not provided.
 
     """
     
@@ -72,10 +73,33 @@ def make_tridiagonal(N, b, d, a):
 
 
 def advection1d(method, nspace, ntime, tau_rel, params):
+    """Solve the 1D advection equation using matrix multiplication.
+
+    Supports the FTCS and Lax numerical methods. The solution is advanced in time
+    using a matrix multiplication approach.
+
+    Args:
+        method: Numerical method that will be used ('ftcs' or 'lax', raises error if other).
+        nspace: Number of spatial grid points.
+        ntime: Number of time steps.
+        tau_rel: Time step relative to the critical time step (tau / tau_crit).
+        params: List containing the length of the  domain and wave speed.
+
+    Returns:
+        A tuple containing:
+            - a : 2D array of wave amplitudes, shape (nspace, ntime).
+            - x: 1D array of spatial grid points.
+            - t: 1D array of time grid points.
+    """
     L, c = params
+
+    # Spatial step size
     h = L / nspace  
+    # Time step size
     tau = tau_rel * h / c  
+    # Spatial grid
     x = np.linspace(-L / 2, L / 2, nspace)  
+    # Time grid
     t = np.linspace(0, ntime * tau, ntime)  
     
     
@@ -93,16 +117,21 @@ def advection1d(method, nspace, ntime, tau_rel, params):
         A = make_tridiagonal(nspace, b=alpha, d=1.0, a=-alpha)
     elif method == 'lax':
         alpha = c * tau / (2 * h)
+        # Account for averaging (0.5) and advection (±alpha)
         A = make_tridiagonal(nspace, b=0.5 + alpha, d=0.0, a=0.5 - alpha)
     else:
         raise ValueError("Invalid method. Choose 'ftcs' or 'lax'.")
 
     # Apply periodic boundary conditions
     if method == 'ftcs':
+        # Last point affects the first
         A[0, -1] = alpha
+        # First point affects the last
         A[-1, 0] = -alpha
     elif method == 'lax':
+        # Last point affects the first
         A[0, -1] = 0.5 + alpha
+        # First point affects the last
         A[-1, 0] = 0.5 - alpha
         
         
@@ -111,6 +140,8 @@ def advection1d(method, nspace, ntime, tau_rel, params):
         spectral_radius_A = spectral_radius(A)
         if spectral_radius_A > 1:
             print("FTCS method is unstable.")   
+            
+            
     # Compute the wave at each time step
     for current_time in range(ntime - 1):
     # Compute the next time step using matrix multiplication
