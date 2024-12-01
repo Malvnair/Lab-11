@@ -82,15 +82,11 @@ def advection1d(method, nspace, ntime, tau_rel, params):
     # Initial condition
     a = np.zeros((nspace, ntime))
     a[:, 0] = make_initialcond(x_i=x)
-    
-    # Check stability for FTCS
-    if method == 'ftcs':
-        spectral_radius_A = spectral_radius(A)
-        if spectral_radius_A > 1:
-            print("FTCS method is unstable.")
+
 
 
     
+
     # Construct the matrix A
     if method == 'ftcs':
         alpha = c * tau / (2 * h)
@@ -101,6 +97,20 @@ def advection1d(method, nspace, ntime, tau_rel, params):
     else:
         raise ValueError("Invalid method. Choose 'ftcs' or 'lax'.")
 
+    # Apply periodic boundary conditions
+    if method == 'ftcs':
+        A[0, -1] = alpha
+        A[-1, 0] = -alpha
+    elif method == 'lax':
+        A[0, -1] = 0.5 + alpha
+        A[-1, 0] = 0.5 - alpha
+        
+        
+    # Check stability for FTCS
+    if method == 'ftcs':
+        spectral_radius_A = spectral_radius(A)
+        if spectral_radius_A > 1:
+            print("FTCS method is unstable.")   
     # Compute the wave at each time step
     for current_time in range(ntime - 1):
     # Compute the next time step using matrix multiplication
