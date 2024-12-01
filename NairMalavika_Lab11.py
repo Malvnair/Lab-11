@@ -69,3 +69,22 @@ def make_tridiagonal(N, b, d, a):
     A += a * np.eye(N, k=1)
     
     return A
+
+
+def advection1d(method, nspace, ntime, tau_rel, params):
+    L, c = params
+    h = L / nspace  
+    tau = tau_rel * h / c  
+    x = np.linspace(-L / 2, L / 2, nspace)  
+    t = np.linspace(0, ntime * tau, ntime)  
+    
+    
+    # Initial condition
+    a = np.zeros((nspace, ntime))
+    a[:, 0] = make_initialcond(x_i=x)
+
+
+    return a, x, t
+
+
+
