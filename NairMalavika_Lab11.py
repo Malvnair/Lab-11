@@ -101,6 +101,12 @@ def advection1d(method, nspace, ntime, tau_rel, params):
     else:
         raise ValueError("Invalid method. Choose 'ftcs' or 'lax'.")
 
+    # Compute the wave at each time step
+    for current_time in range(ntime - 1):
+    # Compute the next time step using matrix multiplication
+        next_state = np.dot(A, a[:, current_time])
+    # Update the array with the new state
+        a[:, current_time + 1] = next_state
 
     return a, x, t
 
