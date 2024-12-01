@@ -23,7 +23,7 @@ def spectral_radius(A):
 
 
 # Import the make initial condition function from NairMalavika_SamoylovaAlona_Lab10
-def make_initialcond(sigma_0=0.2, k_0=35, x_i = grid()):
+def make_initialcond(sigma_0=0.2, k_0=35, x_i = None):
     """
     Function to solve advection equation for the time using Lax method and traffic simulation.
 
@@ -36,8 +36,12 @@ def make_initialcond(sigma_0=0.2, k_0=35, x_i = grid()):
         the initial condition a=> a(x,0)
 
     """
+    
+    # Ensure that a spatial grid is provided, raise an error if not
+    if x_i is None:
+        raise ValueError("x_i (spatial grid) must be provided.")
+    
     a = (np.exp( (-x_i**2) / (2*sigma_0**2))*np.cos(k_0*x_i))
-
     return a
 
 
